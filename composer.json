@@ -1,0 +1,21 @@
+{
+    "name": "karelwintersky/arris.entity",
+    "description": "Entity types for Arris µFramework",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Karel Wintersky",
+            "email": "karel@wintersky.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Arris\\Entity\\": "sources"
+        }
+    },
+    "require": {
+        "php": "^7.4 | 8.*",
+        "ext-json": "*"
+    }
+}
