@@ -1,2 +1,3 @@
 # Arris.Entities 
-Result class for Arris µFramework
+
+Entity types for Arris µFramework
