@@ -2,6 +2,7 @@
 
 namespace Arris\Entity;
 
+#[\AllowDynamicProperties]
 class Result implements \ArrayAccess, \Serializable
 {
     /**
@@ -204,14 +205,28 @@ class Result implements \ArrayAccess, \Serializable
         return $this->code;
     }
 
-    public function getData(): array
+    public function getData($key = null, $default = null)
     {
-        return $this->data;
+        return
+            is_null($key)
+            ? $this->data
+            : (array_key_exists($key, $this->data) ? $this->data[$key] : $default);
     }
 
     public function getAll():array
     {
         return (array)$this;
+    }
+
+    public function get($key = null, $default = null)
+    {
+        if (\property_exists($this, $key)) {
+            return $this->{$key};
+        } elseif (\array_key_exists($key, $this->data)) {
+            return $this->data[$key];
+        } else {
+            return $default;
+        }
     }
 
     /**

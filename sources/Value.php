@@ -2,6 +2,7 @@
 
 namespace Arris\Entity;
 
+#[\AllowDynamicProperties]
 class Value
 {
     private $value;
