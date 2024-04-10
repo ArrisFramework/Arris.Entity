@@ -229,6 +229,22 @@ class Result implements \ArrayAccess, \Serializable
         }
     }
 
+    public function has($key):bool
+    {
+        return
+            \property_exists($this, $key)
+            ||
+            \array_key_exists($key, $this->data);
+
+        /*if (\property_exists($this, $key)) {
+            return true;
+        } elseif (\array_key_exists($key, $this->data)) {
+            return true;
+        } else {
+            return false;
+        }*/
+    }
+
     /**
      * Getter.
      * Handles access to non-existing property
