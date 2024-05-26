@@ -26,7 +26,7 @@ class ArrayHandler extends ArrayHandlerBase
     public function __construct($data = null, $factory = null)
     {
         $source = $data;
-        $isArray = is_array($data);
+        $isArray = \is_array($data);
         if (!$isArray) {
             $source = [$data];
         }
@@ -36,7 +36,7 @@ class ArrayHandler extends ArrayHandlerBase
         if ($factory instanceof IFactory) {
             $this->factory = $factory;
         }
-        if(is_null($factory)){
+        if (\is_null($factory)) {
             $this->factory = new Factory();
         }
     }
@@ -51,9 +51,7 @@ class ArrayHandler extends ArrayHandlerBase
     public function has($key = null): bool
     {
         $output = (new KeySearcher($this->_data))->search($key);
-        $result = $output->has();
-
-        return $result;
+        return $output->has();
     }
 
     /**
@@ -80,7 +78,7 @@ class ArrayHandler extends ArrayHandlerBase
      */
     public function getting()
     {
-        $keys = array_keys($this->_data);
+        $keys = \array_keys($this->_data);
         foreach ($keys as $key) {
             $value = $this->get($key);
             $isArray = $value->type() === 'array';
@@ -122,7 +120,7 @@ class ArrayHandler extends ArrayHandlerBase
      */
     public function pulling()
     {
-        $keys = array_keys($this->_data);
+        $keys = \array_keys($this->_data);
         foreach ($keys as $key) {
             $nextArray = $this->pull($key);
 
@@ -150,7 +148,7 @@ class ArrayHandler extends ArrayHandlerBase
 
     public function current()
     {
-        return new ValueHandler(current($this->_data));
+        return new ValueHandler(\current($this->_data));
     }
 
     public function key()
@@ -165,7 +163,7 @@ class ArrayHandler extends ArrayHandlerBase
 
     public function valid()
     {
-        return key_exists(key($this->_data), $this->_data);
+        return \key_exists(key($this->_data), $this->_data);
     }
 
     public function jsonSerialize()

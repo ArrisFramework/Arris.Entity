@@ -40,7 +40,7 @@ class ArrayHandlerBase
      */
     protected static function asUndefined()
     {
-        $wasInit = !is_null(self::$_undefined);
+        $wasInit = !\is_null(self::$_undefined);
         if (!$wasInit) {
             $handler = new static();
             $handler->_setUndefined();

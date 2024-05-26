@@ -39,20 +39,26 @@ class KeySearcher implements IKeySearcher
         $result = new SearchResult(false, $key);
 
         $data = $this->_source;
-        $keyExists = array_key_exists($key, $data);
+        $keyExists = \array_key_exists($key, $data);
+
         if ($keyExists) {
             $result = new SearchResult(true, $key);
         }
+
         $isNullKey = false;
+
         if (!$keyExists) {
             $isNullKey = is_null($key);
         }
+
         if ($isNullKey) {
             $key = key($data);
         }
+
         if ($isNullKey && !$keyExists) {
-            $keyExists = array_key_exists($key, $data);
+            $keyExists = \array_key_exists($key, $data);
         }
+
         if ($isNullKey && $keyExists) {
             $result = new SearchResult(true, $key);
         }

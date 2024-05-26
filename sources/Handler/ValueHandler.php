@@ -81,9 +81,7 @@ class ValueHandler implements IValueHandler
      */
     public function asIs()
     {
-        $result = $this->has() ? $this->_value : $this->_default;
-
-        return $result;
+        return $this->has() ? $this->_value : $this->_default;
     }
 
     /**

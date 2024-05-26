@@ -6,15 +6,11 @@ class Factory implements IFactory
 {
     public static function getValueHandler($value = null): IValueHandler
     {
-        $result = new ValueHandler($value);
-
-        return $result;
+        return new ValueHandler($value);
     }
 
     public static function getUndefinedValue(): IValueHandler
     {
-        $result = ValueHandler::asUndefined();
-
-        return $result;
+        return ValueHandler::asUndefined();
     }
 }
