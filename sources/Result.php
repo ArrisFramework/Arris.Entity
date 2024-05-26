@@ -293,6 +293,7 @@ class Result implements \ArrayAccess, \Serializable
      * @param $offset
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset): bool
     {
         return \property_exists($this, $offset) || \array_key_exists($offset, $this->data);
@@ -302,6 +303,7 @@ class Result implements \ArrayAccess, \Serializable
      * @param $offset
      * @return mixed|null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->__get($offset);
@@ -312,6 +314,7 @@ class Result implements \ArrayAccess, \Serializable
      * @param $value
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->{$offset} = $value;
@@ -321,6 +324,7 @@ class Result implements \ArrayAccess, \Serializable
      * @param $offset
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->{$offset});
