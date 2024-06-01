@@ -50,7 +50,9 @@ class Result implements \ArrayAccess, \Serializable
      */
     public function set($key, $value): Result
     {
-        return $this->__set($key, $value);
+        $this->__set($key, $value);
+
+        return $this;
     }
 
     /**
@@ -273,20 +275,16 @@ class Result implements \ArrayAccess, \Serializable
      *
      * @param string $key
      * @param $value
-     * @return self
+     * @return void
      */
-    public function __set(string $key, $value = null): self
+    public function __set(string $key, $value = null): void
     {
         $this->{$key} = $value;
-
-        return $this;
     }
 
-    public function __setData(string $key, $value = null): self
+    public function __setData(string $key, $value = null):void
     {
         $this->data[$key] = $value;
-
-        return $this;
     }
 
     /**
