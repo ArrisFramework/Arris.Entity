@@ -354,12 +354,7 @@ class Result implements \ArrayAccess, \Serializable
     public function unserialize($data): Result
     {
         $json = \json_decode($data, true);
-        $this->is_success   = array_key_exists('is_success', $json) ? $json['is_success'] : true;
-        $this->is_error     = array_key_exists('is_error', $json) ? $json['is_error'] : false;
-        $this->message      = array_key_exists('message', $json) ? $json['message'] : '';
-        $this->code         = array_key_exists('code', $json) ? $json['code'] : '';
-        $this->data         = array_key_exists('data', $json) ? $json['data'] : '';
-        $this->messages     = array_key_exists('messages', $json) ? $json['messages'] : '';
+        $this->__unserialize($json);
         unset($json);
 
         return $this;
@@ -367,11 +362,16 @@ class Result implements \ArrayAccess, \Serializable
 
     public function __serialize(): array
     {
-        // TODO: Implement __serialize() method.
+        return (array)$this;
     }
 
     public function __unserialize(array $data): void
     {
-        // TODO: Implement __unserialize() method.
+        $this->is_success   = array_key_exists('is_success', $data) ? $data['is_success'] : true;
+        $this->is_error     = array_key_exists('is_error', $data) ? $data['is_error'] : false;
+        $this->message      = array_key_exists('message', $data) ? $data['message'] : '';
+        $this->code         = array_key_exists('code', $data) ? $data['code'] : '';
+        $this->data         = array_key_exists('data', $data) ? $data['data'] : '';
+        $this->messages     = array_key_exists('messages', $data) ? $data['messages'] : '';
     }
 }
