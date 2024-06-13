@@ -10,25 +10,34 @@ return (new \PhpCsFixer\Config())
         // Each line of multi-line DocComments must have an asterisk
         // [PSR-5] and must be aligned with the first one.
         'align_multiline_comment' => true,
+
         // Each element of an array must be indented exactly once.
         'array_indentation' => true,
+
         // PHP arrays should be declared using the configured syntax.
         'array_syntax' => true,
+
         // There MUST be one blank line after the namespace declaration.
         'blank_line_after_namespace' => true,
+
         // Ensure there is no code on the same line as the PHP open tag
         // and it is followed by a blank line.
         'blank_line_after_opening_tag' => true,
+
         // An empty line feed should precede a return statement.
         'blank_line_before_return' => true,
+
         // An empty line feed must precede any configured statement.
         'blank_line_before_statement' => true,
+
         // The body of each structure MUST be enclosed by braces. Braces
         // should be properly placed. Body of braces should be properly
         // indented.
         'braces' => true,
+
         // A single space or none should be between cast and variable.
         'cast_spaces' => true,
+
         // Class, trait and interface elements must be separated with
         // one blank line.
         'class_attributes_separation' => true,

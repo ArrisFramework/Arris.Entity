@@ -85,6 +85,7 @@ class Result implements \ArrayAccess, \Serializable
 
     /**
      * Устанавливаем единичное сообщение
+     * Если сообщение пустое - не устанавливаем!
      *
      * @param string $message
      * @param ...$args
@@ -92,10 +93,12 @@ class Result implements \ArrayAccess, \Serializable
      */
     public function setMessage(string $message = '', ...$args): Result
     {
-        if (!empty($args[0])) {
-            $this->message = \vsprintf($message, $args[0]);
-        } else {
-            $this->message = $message;
+        if (!empty($message)) {
+            if (!empty($args[0])) {
+                $this->message = \vsprintf($message, $args[0]);
+            } else {
+                $this->message = $message;
+            }
         }
 
         /*if (func_num_args() > 1) {
@@ -141,7 +144,8 @@ class Result implements \ArrayAccess, \Serializable
     }
 
     /**
-     * Устанавливает признак: результат ОШИБОЧЕН
+     * Устанавливает признак: результат ОШИБОЧЕН.
+     * Если message пустой - он не должен быть установлен!
      *
      * @return $this
      */
