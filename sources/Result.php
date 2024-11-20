@@ -35,10 +35,14 @@ class Result implements \ArrayAccess, \Serializable
      */
     public array $data = [];
 
-    public function __construct(bool $is_success = true)
+    public function __construct(bool $is_success = true, $message = null)
     {
         $this->is_success = $is_success;
         $this->is_error = !$is_success;
+
+        if (!is_null($message)) {
+            $this->setMessage($message);
+        }
     }
 
     /**
@@ -117,7 +121,7 @@ class Result implements \ArrayAccess, \Serializable
      * @param ...$args
      * @return $this
      */
-    public function addMessage(string $message, ...$args)
+    public function addMessage(string $message, ...$args): Result
     {
         if (func_num_args() > 1) {
             $this->messages[] = \vsprintf($message, $args);
