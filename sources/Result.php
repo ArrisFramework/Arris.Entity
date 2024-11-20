@@ -2,7 +2,7 @@
 
 namespace Arris\Entity;
 
-// use Arris\Entity\Helper\Dot;
+use Arris\Entity\Helper\Dot;
 
 #[\AllowDynamicProperties]
 class Result implements \ArrayAccess, \Serializable
@@ -33,9 +33,9 @@ class Result implements \ArrayAccess, \Serializable
     public array $messages = [];
 
     /**
-     * @var array
+     * @var Dot|array $data
      */
-    public array $data = [];
+    public $data;
 
     public function __construct(bool $is_success = true, $message = null)
     {
@@ -45,7 +45,21 @@ class Result implements \ArrayAccess, \Serializable
         if (!is_null($message)) {
             $this->setMessage($message);
         }
+
+        $this->data = new Dot();
     }
+
+    /**
+     * Возвращает инстанс Result как массив
+     *
+     * @return array
+     */
+    public function getIt():array
+    {
+        return (array)$this;
+    }
+
+    /* === Работа с состояниями результата === */
 
     /**
      * Устанавливаем состояние (аналогично конструктору), но у экземпляра.
@@ -62,90 +76,13 @@ class Result implements \ArrayAccess, \Serializable
     }
 
     /**
-     * Устанавливаем произвольный property
+     * Возвращает состояние результата
      *
-     * @param $key
-     * @param $value
-     * @return $this
+     * @return bool
      */
-    public function set($key, $value): Result
+    public function getState():bool
     {
-        $this->__set($key, $value);
-
-        return $this;
-    }
-
-    /**
-     * Устанавливаем данные
-     *
-     * @param array $data
-     * @return $this
-     */
-    public function setData(array $data = []): Result
-    {
-        foreach ($data as $k => $v) {
-            $this->__setData($k, $v);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Устанавливает цифровой код (может использоваться как код ошибки)
-     *
-     * @param $code string|int
-     * @return $this
-     */
-    public function setCode($code):Result
-    {
-        $this->code = $code;
-
-        return $this;
-    }
-
-    /**
-     * Устанавливаем единичное сообщение
-     * Если сообщение пустое - не устанавливаем!
-     *
-     * @param string $message
-     * @param ...$args
-     * @return $this
-     */
-    public function setMessage(string $message = '', ...$args): Result
-    {
-        if (!empty($message)) {
-            if (!empty($args[0])) {
-                $this->message = \vsprintf($message, $args[0]);
-            } else {
-                $this->message = $message;
-            }
-        }
-
-        /*if (func_num_args() > 1) {
-            $this->message = vsprintf($message, $args);
-        } else {
-            $this->message = $message;
-        }*/
-
-        return $this;
-    }
-
-    /**
-     * Добавляем сообщение к массиву сообщений
-     *
-     * @param string $message
-     * @param ...$args
-     * @return $this
-     */
-    public function addMessage(string $message, ...$args): Result
-    {
-        if (func_num_args() > 1) {
-            $this->messages[] = \vsprintf($message, $args);
-        } else {
-            $this->messages[] = $message;
-        }
-
-        return $this;
+        return $this->is_success;
     }
 
     /**
@@ -179,14 +116,129 @@ class Result implements \ArrayAccess, \Serializable
         return $this;
     }
 
-    /* === Getters === */
+    /* === Одиночные ключи-свойства === */
 
     /**
+     * Устанавливаем произвольный одиночный ключ-свойство
+     *
+     * @param $key
+     * @param $value
+     * @return $this
+     */
+    public function set($key, $value): Result
+    {
+        $this->__set($key, $value);
+
+        return $this;
+    }
+
+    /**
+     * Возвращает значение одиночного ключа-свойства
+     *
+     * @param $key
+     * @param $default
+     * @return array|mixed|null
+     */
+    public function get($key = null, $default = null)
+    {
+        if (\property_exists($this, $key)) {
+            return $this->{$key};
+        } elseif (\array_key_exists($key, $this->data)) {
+            return $this->data[$key];
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * Проверяет наличие одиночного ключа-свойства, сначала в списке свойств, потом в массиве данных
+     *
+     * @param $key
+     * @return bool
+     */
+    public function has($key):bool
+    {
+        return
+            \property_exists($this, $key)
+            ||
+            \array_key_exists($key, $this->data);
+    }
+
+    /* === Код результата === */
+
+    /**
+     * Устанавливает цифровой код (может использоваться как код ошибки)
+     *
+     * @param $code string|int
+     * @return $this
+     */
+    public function setCode($code):Result
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    /**
+     * Возвращает код
+     *
+     * @return string|int
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /* === Сообщения (messages) === */
+
+    /**
+     * Устанавливаем единичное сообщение
+     *
+     * Если сообщение пустое - ничего не делаем!
+     *
+     * @param string $message
+     * @param ...$args
+     * @return $this
+     */
+    public function setMessage(string $message = '', ...$args): Result
+    {
+        if (!empty($message)) {
+            if (!empty($args[0])) {
+                $this->message = \vsprintf($message, $args[0]);
+            } else {
+                $this->message = $message;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Возвращаем единичное сообщение
+     *
      * @return string
      */
     public function getMessage():string
     {
         return $this->message;
+    }
+
+    /**
+     * Добавляем сообщение к массиву сообщений
+     *
+     * @param string $message
+     * @param ...$args
+     * @return $this
+     */
+    public function addMessage(string $message, ...$args): Result
+    {
+        if (func_num_args() > 1) {
+            $this->messages[] = \vsprintf($message, $args);
+        } else {
+            $this->messages[] = $message;
+        }
+
+        return $this;
     }
 
     /**
@@ -221,57 +273,51 @@ class Result implements \ArrayAccess, \Serializable
         return $imploded;
     }
 
+    /* === Данные (data как репозиторий DOT) === */
+
     /**
-     * Возвращает код
+     * Устанавливает данные в датасете, допустим путь через точку
      *
-     * @return string|int
+     * @param $keys
+     * @param null $value
+     * @return $this
      */
-    public function getCode()
+    public function setData($keys, $value = null): Result
     {
-        return $this->code;
+        $this->data->set($keys, $value);
+
+        return $this;
     }
 
+    /**
+     * Добавляет данные в датасет, допустим путь через точку
+     *
+     * @param $keys
+     * @param $value
+     *
+     * @return $this
+     */
+    public function addData($keys, $value = null):Result
+    {
+        $this->data->merge($keys, $value);
+
+        return $this;
+    }
+
+    /**
+     * Возвращает данные из датасета, допустим путь через точку
+     *
+     * @param $key
+     * @param $default
+     * @return array|mixed
+     */
     public function getData($key = null, $default = null)
     {
-        // return (new Dot($this->data))->get($key, $default);
-
-        return
-            is_null($key)
-            ? $this->data
-            : (array_key_exists($key, $this->data) ? $this->data[$key] : $default);
+        return $this->data->get($key, $default);
     }
 
-    public function getAll():array
-    {
-        return (array)$this;
-    }
 
-    public function get($key = null, $default = null)
-    {
-        if (\property_exists($this, $key)) {
-            return $this->{$key};
-        } elseif (\array_key_exists($key, $this->data)) {
-            return $this->data[$key];
-        } else {
-            return $default;
-        }
-    }
-
-    public function has($key):bool
-    {
-        return
-            \property_exists($this, $key)
-            ||
-            \array_key_exists($key, $this->data);
-
-        /*if (\property_exists($this, $key)) {
-            return true;
-        } elseif (\array_key_exists($key, $this->data)) {
-            return true;
-        } else {
-            return false;
-        }*/
-    }
+    /* === Внутренние методы === */
 
     /**
      * Getter.
@@ -355,7 +401,7 @@ class Result implements \ArrayAccess, \Serializable
     }
 
     /**
-     * Сериализатор
+     * Превращает результат в JSON-строку
      *
      * @return false|string|null
      */
@@ -369,6 +415,16 @@ class Result implements \ArrayAccess, \Serializable
             'code'          =>  $this->code,
             'data'          =>  $this->data
         ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE /*| JSON_THROW_ON_ERROR*/);
+    }
+
+    /**
+     * Превращает данные в JSON-строку (алиас serialize)
+     *
+     * @return false|string|null
+     */
+    public function asJSON()
+    {
+        return $this->serialize();
     }
 
     /**
