@@ -2,6 +2,8 @@
 
 namespace Arris\Entity;
 
+// use Arris\Entity\Helper\Dot;
+
 #[\AllowDynamicProperties]
 class Result implements \ArrayAccess, \Serializable
 {
@@ -43,6 +45,20 @@ class Result implements \ArrayAccess, \Serializable
         if (!is_null($message)) {
             $this->setMessage($message);
         }
+    }
+
+    /**
+     * Устанавливаем состояние (аналогично конструктору), но у экземпляра.
+     *
+     * @param bool $is_success
+     * @return $this
+     */
+    public function setState(bool $is_success = true):Result
+    {
+        $this->is_success = $is_success;
+        $this->is_error = !$is_success;
+
+        return $this;
     }
 
     /**
@@ -217,6 +233,8 @@ class Result implements \ArrayAccess, \Serializable
 
     public function getData($key = null, $default = null)
     {
+        // return (new Dot($this->data))->get($key, $default);
+
         return
             is_null($key)
             ? $this->data
