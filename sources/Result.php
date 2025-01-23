@@ -427,6 +427,11 @@ class Result implements \ArrayAccess, \Serializable
         return $this->serialize();
     }
 
+    public function toArray():array
+    {
+        return (array)$this;
+    }
+
     /**
      * Десериализатор
      *
