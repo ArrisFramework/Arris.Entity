@@ -5,7 +5,7 @@ use Arris\Entity\Result;
 
 class ResultTest extends TestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass():void
     {
         parent::setUpBeforeClass();
     }
@@ -43,7 +43,7 @@ class ResultTest extends TestCase
         $r = new Result();
         $r->setMessage("any message");
 
-        $this->assertEquals("any message", $r->message);
+        $this->assertEquals("any message", $r->getMessage());
     }
 
     /**
@@ -52,10 +52,11 @@ class ResultTest extends TestCase
      */
     public function testTwoArgsStringAndArray()
     {
-        $r = new Result('message', ['a' => 'b']);
+        $r = new Result(true, 'message');
         $r->set('a', 'b');
         $r->setMessage('message');
 
+        $this->assertTrue($r->is_success);
         $this->assertEquals('b', $r->a);
         $this->assertEquals('message', $r->message);
     }
@@ -82,7 +83,6 @@ class ResultTest extends TestCase
         $r->setData([
             'a' =>  'b'
         ])->setMessage('message');
-
 
         $this->assertFalse($r->is_error);
         $this->assertEquals('message', $r->message);

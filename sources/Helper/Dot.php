@@ -10,23 +10,9 @@ use IteratorAggregate;
 
 class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
 {
-    /**
-     * The stored items
-     *
-     * @var array
-     */
-    protected $items = [];
+    protected array $items = [];
+    protected string $delimiter = ".";
 
-    /**
-     * @var string
-     */
-    protected $delimiter = ".";
-
-    /**
-     * Create a new Dot instance
-     *
-     * @param mixed $items
-     */
     public function __construct($items = [], $parse = false, $delimiter = ".")
     {
         $items = $this->getArrayItems($items);
@@ -49,7 +35,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param mixed $value
      * @return Dot
      */
-    public function add($keys, $value = null)
+    public function add($keys, $value = null):self
     {
         if (is_array($keys)) {
             foreach ($keys as $k => $v) {
@@ -64,10 +50,9 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
 
     /**
      * Return all the stored items
-     *
      * @return array
      */
-    public function all()
+    public function all():array
     {
         return $this->items;
     }
@@ -78,7 +63,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param array|int|string|null $keys
      * @return Dot
      */
-    public function clear($keys = null)
+    public function clear($keys = null):self
     {
         if (is_null($keys)) {
             $this->items = [];
@@ -100,7 +85,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param array|int|string $keys
      * @return Dot
      */
-    public function delete($keys)
+    public function delete($keys):self
     {
         $keys = (array) $keys;
 
@@ -137,7 +122,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      *
      * @return bool
      */
-    protected function exists($array, $key)
+    protected function exists($array, $key):bool
     {
         return array_key_exists($key, $array);
     }
@@ -145,12 +130,12 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
     /**
      * Flatten an array with the given character as a key delimiter
      *
-     * @param  string     $delimiter
+     * @param string $delimiter
      * @param  array|null $items
      * @param  string     $prepend
      * @return array
      */
-    public function flatten($delimiter = '.', $items = null, $prepend = '')
+    public function flatten(string $delimiter = '.', $items = null, $prepend = ''): array
     {
         $flatten = [];
 
@@ -212,7 +197,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param  mixed $items
      * @return array
      */
-    protected function getArrayItems($items)
+    protected function getArrayItems($items): array
     {
         if (is_array($items)) {
             return $items;
@@ -289,7 +274,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param array|self $value
      * @return Dot
      */
-    public function merge($key, $value = [])
+    public function merge($key, $value = []):self
     {
         if (is_array($key)) {
             $this->items = array_merge($this->items, $key);
@@ -314,7 +299,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param array|self $value
      * @return Dot
      */
-    public function mergeRecursive($key, $value = [])
+    public function mergeRecursive($key, $value = []):self
     {
         if (is_array($key)) {
             $this->items = array_merge_recursive($this->items, $key);
@@ -341,7 +326,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param array|self $value
      * @return Dot
      */
-    public function mergeRecursiveDistinct($key, $value = [])
+    public function mergeRecursiveDistinct($key, $value = []):self
     {
         if (is_array($key)) {
             $this->items = $this->arrayMergeRecursiveDistinct($this->items, $key);
@@ -366,7 +351,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param  array $array2 Array to recursively merge
      * @return array
      */
-    protected function arrayMergeRecursiveDistinct(array $array1, array $array2)
+    protected function arrayMergeRecursiveDistinct(array $array1, array $array2): array
     {
         $merged = &$array1;
 
@@ -412,7 +397,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param mixed $value
      * @return Dot
      */
-    public function push($key, $value = null)
+    public function push($key, $value = null):self
     {
         if (is_null($value)) {
             $this->items[] = $key;
@@ -461,7 +446,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param mixed $value
      * @return Dot
      */
-    public function set($keys, $value = null)
+    public function set($keys, $value = null):self
     {
         if (is_array($keys)) {
             foreach ($keys as $k => $v) {
@@ -492,7 +477,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param mixed $items
      * @return Dot
      */
-    public function setArray($items)
+    public function setArray($items):self
     {
         $this->items = $this->getArrayItems($items);
 
@@ -505,7 +490,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param array $items
      * @return Dot
      */
-    public function setReference(array &$items)
+    public function setReference(array &$items):self
     {
         $this->items = &$items;
 
@@ -519,7 +504,7 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
      * @param  int    $options
      * @return string
      */
-    public function toJson($key = null, $options = 0)
+    public function toJson($key = null, $options = 0): string
     {
         if (is_string($key)) {
             return json_encode($this->get($key), $options);
@@ -641,4 +626,4 @@ class Dot implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
     }
 }
 
-# -eof-
+# -eof- #

@@ -20,26 +20,16 @@
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
-        strict="true"
 >
-    <testsuite>
-        <testsuite name="unit">
-            <directory>./tests/</directory>
-        </testsuite>
+    <testsuite name="unit">
+        <directory>./tests/</directory>
     </testsuite>
 
     <filter>
         <whitelist>
             <directory suffix=".php">sources</directory>
         </whitelist>
-        <blacklist>
-            <directory>vendor</directory>
-        </blacklist>
     </filter>
-
-    <logging>
-        <log type="coverage-html" target="./tests/codeCoverage" charset="UTF-8"/>
-    </logging>
 
     <php>
         <env name="APP_ENV" value="testing"/>
