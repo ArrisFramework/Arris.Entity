@@ -3,9 +3,9 @@
 namespace Arris\Entity;
 
 #[\AllowDynamicProperties]
-class Value
+class Value implements \JsonSerializable
 {
-    private $value;
+    public $value;
 
     public function __construct($value)
     {
@@ -47,4 +47,8 @@ class Value
         return (array)$this->value;
     }
 
+    public function jsonSerialize()
+    {
+        return $this->value;
+    }
 }

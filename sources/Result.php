@@ -3,44 +3,105 @@
 namespace Arris\Entity;
 
 use Arris\Entity\Helper\Dot;
+use stdClass;
 
 #[\AllowDynamicProperties]
-class Result implements \ArrayAccess, \Serializable
+class Result implements \ArrayAccess, \Serializable, \JsonSerializable
 {
     /**
+     * is Result success?
      * @var bool
      */
     public bool $is_success = true;
 
     /**
+     * result is error
+     *
      * @var bool
      */
     public bool $is_error = false;
 
     /**
+     * Result message
+     *
      * @var string
      */
     public string $message = '';
 
     /**
-     * @var string
-     */
-    public string $code = '';
-
-    /**
+     * Result messages set
+     *
      * @var array
      */
     public array $messages = [];
 
     /**
+     * Result code
+     *
+     * @var string
+     */
+    public string $code = '';
+
+    /**
+     * Result data (dot) collection
+     *
      * @var Dot|array $data
      */
     public $data;
 
+    /* ============================ FAST ACCESSIBLE TYPED FIELDS ============================ */
+
+    /**
+     * Untyped value
+     *
+     * @var mixed $raw
+     */
+    public $raw;
+
+    /**
+     * Integer field
+     *
+     * @var int $raw_int
+     */
+    public int $raw_int = 0;
+
+    /**
+     * String field
+     * @var string $raw_string
+     */
+    public string $raw_string = '';
+
+    /**
+     * Array field
+     *
+     * @var array $raw_array
+     */
+    public array $raw_array = [];
+
+    /**
+     * Boolean field
+     *
+     * @var bool $raw_bool
+     */
+    public bool $raw_bool = false;
+
+    /**
+     * stdObject field
+     *
+     * @var stdClass $raw_object
+     */
+    public stdClass $raw_object;
+
+    /**
+     * @param bool $is_success
+     * @param $message
+     */
     public function __construct(bool $is_success = true, $message = null)
     {
         $this->is_success = $is_success;
         $this->is_error = !$is_success;
+
+        $this->raw_object = new stdClass();
 
         if (!is_null($message)) {
             $this->setMessage($message);
@@ -133,7 +194,10 @@ class Result implements \ArrayAccess, \Serializable
     }
 
     /**
-     * Возвращает значение одиночного ключа-свойства
+     * Возвращает значение одиночного ключа-свойства.
+     * Сначала ищем проперти с таким именем, потом ключ в репозитории data
+     *
+     * NB: не стоит искать имена 'code' и 'data'
      *
      * @param $key
      * @param $default
@@ -196,15 +260,17 @@ class Result implements \ArrayAccess, \Serializable
      *
      * Если сообщение пустое - ничего не делаем!
      *
+     * Принимает аргументы для sprintf (аргументы передаются массивом)
+     *
      * @param string $message
-     * @param ...$args
+     * @param array $args
      * @return $this
      */
-    public function setMessage(string $message = '', ...$args): Result
+    public function setMessage(string $message = '', array $args = []): Result
     {
         if (!empty($message)) {
-            if (!empty($args[0])) {
-                $this->message = \vsprintf($message, $args[0]);
+            if (!empty($args)) {
+                $this->message = \vsprintf($message, $args);
             } else {
                 $this->message = $message;
             }
@@ -226,13 +292,15 @@ class Result implements \ArrayAccess, \Serializable
     /**
      * Добавляем сообщение к массиву сообщений
      *
+     * Поддерживается формат sprintf (аргументы передаются массивом)
+     *
      * @param string $message
-     * @param ...$args
+     * @param array $args
      * @return $this
      */
-    public function addMessage(string $message, ...$args): Result
+    public function addMessage(string $message, array $args = []): Result
     {
-        if (func_num_args() > 1) {
+        if (!empty($args)) {
             $this->messages[] = \vsprintf($message, $args);
         } else {
             $this->messages[] = $message;
@@ -242,9 +310,11 @@ class Result implements \ArrayAccess, \Serializable
     }
 
     /**
-     * @param bool $implode
-     * @param string $glue
-     * @param array $brackets
+     * Возвращает список сообщений, скленных и упакованных в скобки
+     *
+     * @param bool $implode - склеивать ли сообщения?
+     * @param string $glue - символ склейки сообщений
+     * @param array $brackets - "скобки" для склеенного массива сообщений
      * @return array|string
      */
     public function getMessages(bool $implode = false, string $glue = ',', array $brackets = ['[', ']'])
@@ -256,7 +326,11 @@ class Result implements \ArrayAccess, \Serializable
         $imploded = \implode($glue, $this->messages);
 
         if (!empty($brackets)) {
-            switch (\count($brackets)) {
+            if (count($brackets) == 1) {
+                $brackets[1] = $brackets[0];
+            }
+
+            /*switch (\count($brackets)) {
                 case 0: {
                     $brackets[1] = $brackets[0] = '';
                     break;
@@ -265,7 +339,7 @@ class Result implements \ArrayAccess, \Serializable
                     $brackets[1] = $brackets[0];
                     break;
                 }
-            }
+            }*/
 
             $imploded = $brackets[0] . $imploded . $brackets[1];
         }
@@ -427,6 +501,11 @@ class Result implements \ArrayAccess, \Serializable
         return $this->serialize();
     }
 
+    /**
+     * Возвращает инстанс  как массив
+     *
+     * @return array
+     */
     public function toArray():array
     {
         return (array)$this;
@@ -460,5 +539,25 @@ class Result implements \ArrayAccess, \Serializable
         $this->code         = array_key_exists('code', $data) ? $data['code'] : '';
         $this->data         = array_key_exists('data', $data) ? $data['data'] : '';
         $this->messages     = array_key_exists('messages', $data) ? $data['messages'] : '';
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'is_success'    =>  $this->is_success,
+            'is_error'      =>  $this->is_error,
+            'message'       =>  $this->message,
+            'code'          =>  $this->code,
+            'messages'      =>  $this->messages,
+            'data'          =>  $this->data,
+            'raw'   =>  [
+                '_'         =>  $this->raw,
+                'bool'      =>  $this->raw_bool,
+                'int'       =>  $this->raw_int,
+                'string'    =>  $this->raw_string,
+                'array'     =>  $this->raw_array,
+                'object'    =>  $this->raw_object
+            ]
+        ];
     }
 }

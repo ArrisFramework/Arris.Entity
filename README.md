@@ -124,3 +124,15 @@ $t = new \Arris\Entity\Value('123');
 $t->toInt();
 ```
 
+# TODO нужны тесты итд
+
+ВОЗМОЖНО, нужно исправить метод addData так:
+```php
+public function addData($keys, $value = null):Result
+{
+    $this->data->merge($keys, [ $value ]);
+
+    return $this;
+}
+```
+Для чего? Чтобы работало добавление вложенных структур? Забыл :sad:

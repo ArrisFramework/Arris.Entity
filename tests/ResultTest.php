@@ -38,12 +38,36 @@ class ResultTest extends TestCase
      * @return void
      * @testdox Test Result with given message
      */
-    public function TestMessage()
+    public function testMessage()
     {
         $r = new Result();
         $r->setMessage("any message");
 
         $this->assertEquals("any message", $r->getMessage());
+    }
+
+    /**
+     * @return void
+     * @testdox test Result with given message with sprintf args
+     */
+    public function testMessageWithArgs()
+    {
+        $r = new Result();
+        $r->setMessage("Any message with [%s] and [%s]", [ 1, 2 ]);
+        $this->assertEquals("Any message with [1] and [2]", $r->getMessage());
+    }
+
+    /**
+     * @return void
+     * @testdox test Result with multiply imploded messages with sprintf args
+     */
+    public function testMessagesWithArgs()
+    {
+        $r = new Result();
+        $r->addMessage("%s => %s", [ 1, 2 ]);
+        $r->addMessage("%s => %s", [ 4, 5 ]);
+
+        $this->assertEquals("1 => 2 , 4 => 5", $r->getMessages(true, ' , ', []));
     }
 
     /**
@@ -87,6 +111,37 @@ class ResultTest extends TestCase
         $this->assertFalse($r->is_error);
         $this->assertEquals('message', $r->message);
         $this->assertEquals('b', $r->getData('a'));
+    }
+
+    /**
+     * @return void
+     * @testdoc test raw fields
+     */
+    public function testRawFields()
+    {
+        $r = new Result();
+
+        $r->raw_bool = true;
+        $this->assertTrue($r->raw_bool);
+
+        $r->raw_bool = false;
+        $this->assertFalse($r->raw_bool);
+
+        $r->raw_int = 123;
+        $this->assertEquals(123, $r->raw_int);
+
+        $r->raw_string = 'foo';
+        $this->assertEquals('foo', $r->raw_string);
+
+        $r->raw_array = ['foo', 'bar'];
+        $this->assertIsArray($r->raw_array);
+        $this->assertContains('foo', $r->raw_array);
+        $this->assertNotContains('baz', $r->raw_array);
+
+        $r->raw_object->key = 133;
+
+        $this->assertIsObject($r->raw_object);
+        $this->assertEquals(133, $r->raw_object->key);
     }
 
 }
